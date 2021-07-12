@@ -30,7 +30,7 @@ body {
   width: 100%;
   padding-top: 130%;
   border: 1px solid #ddd;
-  transition: transform 0.5s linear;
+  transition: transform 0.75s linear;
   transform-style: preserve-3d;
 }
 
