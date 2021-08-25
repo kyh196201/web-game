@@ -5,9 +5,17 @@ const BLOCK_SIZE = 30;
 
 // enumeration
 const KEY = {
-  LEFT: 37,
-  RIGHT: 39,
-  DOWN: 40,
+  LEFT: 'ArrowLeft',
+  RIGHT: 'ArrowRight',
+  DOWN: 'ArrowDown',
 };
 
 Object.freeze(KEY);
+
+// NOTE 얕은 복사
+// 원본 조각을 변화시키지 않고 새로운 조각을 얻을 수 있다.
+const moves = {
+  [KEY.LEFT]: p => ({...p, x: p.x - 1}),
+  [KEY.RIGHT]: p => ({...p, x: p.x + 1}),
+  [KEY.DOWN]: p => ({...p, y: p.y + 1}),
+};

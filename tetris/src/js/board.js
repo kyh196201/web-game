@@ -13,4 +13,8 @@ class Board {
   getEmptyBoard() {
     return Array.from({length: this.rows}, () => Array(this.cols).fill(0));
   }
+
+  valid(p) {
+    return true;
+  }
 }
