@@ -2,24 +2,28 @@
 
 const LENGTH = 3;
 const marks = ['O', 'X'];
-let mode = 'single';
 
-const players =
-  mode === 'multi' ? ['player1', 'player2'] : ['player1', 'computer'];
-
-let currentPlayers = players.slice();
+let mode = 'multi';
+let players = [];
+let currentPlayers = [];
+let turn = null;
 let count = 0;
 let board = null;
-let turn = currentPlayers[0];
 let gameover = false;
 
 // 엘리먼트
+const $mode = document.getElementById('mode');
+const $singleBtn = document.getElementById('single-btn');
+const $multiBtn = document.getElementById('multi-btn');
 const $board = document.getElementById('board');
 const $player = document.getElementById('player');
 const $mark = document.getElementById('mark');
 
 // 게임 초기화
-function resetGame() {
+function initGame(mode) {
+  const players =
+    mode === 'multi' ? ['player1', 'player2'] : ['player1', 'computer'];
+
   currentPlayers = players.slice();
   gameover = false;
   count = 0;
@@ -27,15 +31,21 @@ function resetGame() {
 
   setBoard();
   renderBoard();
+  renderPlayer();
+  renderMark();
+
+  if (isComputersTurn()) {
+    playComputer();
+  }
 }
 
 // 게임 종료
 function endGame(message) {
   gameover = true;
+  $mode.classList.remove('hide');
 
   setTimeout(() => {
     alert(message);
-    resetGame();
   }, 50);
 }
 
@@ -122,7 +132,6 @@ function handleClickCell(e) {
   if (gameover) return false;
 
   if (isComputersTurn()) {
-    console.log('컴퓨터 차례입니다. 잠시만 기다려주세요.');
     return false;
   }
 
@@ -138,7 +147,6 @@ function handleClickCell(e) {
   selectCell(x, y);
 
   if (isComputersTurn()) {
-    console.log('컴퓨터 차례입니다.');
     playComputer();
   }
 }
@@ -166,7 +174,7 @@ function getRandomCoords() {
   const emptyCells = findEmptyCells();
 
   if (!emptyCells.length) {
-    console.error('에러');
+    console.error('board is full');
   }
 
   const randomIndex = getRandomIndex(emptyCells.length);
@@ -228,16 +236,28 @@ function renderMark() {
   $mark.textContent = marks[count % 2];
 }
 
-function initGame() {
-  setBoard();
-  renderBoard();
-  renderPlayer();
-  renderMark();
+function selectMode(value) {
+  mode = value;
+  initGame(mode);
+  $mode.classList.add('hide');
+}
+
+function bindEvents() {
+  $singleBtn.addEventListener('click', function (e) {
+    mode = 'single';
+    selectMode(mode);
+  });
+
+  $multiBtn.addEventListener('click', function (e) {
+    mode = 'multi';
+    selectMode(mode);
+    $mode.classList.add('hide');
+  });
 }
 
 // init
 function init() {
-  initGame();
+  bindEvents();
 }
 
 init();

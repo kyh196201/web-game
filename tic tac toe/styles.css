@@ -7,6 +7,23 @@
   margin-top: 300px;
 }
 
+#mode {
+  display: flex;
+  justify-content: center;
+}
+
+#mode.hide {
+  visibility: hidden;
+}
+
+#mode.hide button {
+  pointer-events: none;
+}
+
+#mode button:first-child {
+  margin-right: 30px;
+}
+
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
