@@ -19,6 +19,27 @@ function play() {
   board.piece.draw();
 }
 
+function rotate(p) {
+  // 얕은 복사
+  // NOTE: clone = {...p};로 했을 경우에는 shape가 변경됨
+  const clone = JSON.parse(JSON.stringify(p));
+
+  // 행렬을 변환한다. p는 Piece의 인스턴스이다.
+  for (let y = 0; y < clone.shape.length; ++y) {
+    for (let x = 0; x < y; ++x) {
+      [clone.shape[x][y], clone.shape[y][x]] = [
+        clone.shape[y][x],
+        clone.shape[x][y],
+      ];
+    }
+  }
+
+  // 열 순서대로 뒤집는다.
+  clone.shape.forEach(row => row.reverse());
+
+  return clone;
+}
+
 /**
  * NOTE 얕은 복사
  * 원본 조각을 변화시키지 않고 새로운 조각을 얻을 수 있다.
@@ -28,13 +49,12 @@ const moves = {
   [KEY.RIGHT]: p => ({...p, x: p.x + 1}),
   [KEY.DOWN]: p => ({...p, y: p.y + 1}),
   [KEY.SPACE]: p => ({...p, y: p.y + 1}),
+  [KEY.UP]: p => rotate(p),
 };
 
 // 키보드 입력 이벤트
 document.addEventListener('keydown', event => {
   const {code} = event;
-
-  console.log(event);
 
   if (moves[code]) {
     // 이벤트 버블링을 막는다.
@@ -48,13 +68,19 @@ document.addEventListener('keydown', event => {
         board.piece.move(p);
         p = moves[KEY.DOWN](board.piece);
       }
+
+      //   그리기 전에 이전 좌표를 지운다.
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      board.piece.draw();
     } else if (board.valid(p)) {
       // 이동이 가능한 상태라면 조각을 이동한다.
       board.piece.move(p);
-    }
 
-    //   그리기 전에 이전 좌표를 지운다.
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    board.piece.draw();
+      //   그리기 전에 이전 좌표를 지운다.
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      board.piece.draw();
+    } else {
+      return false;
+    }
   }
 });
