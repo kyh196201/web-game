@@ -27,27 +27,34 @@ const moves = {
   [KEY.LEFT]: p => ({...p, x: p.x - 1}),
   [KEY.RIGHT]: p => ({...p, x: p.x + 1}),
   [KEY.DOWN]: p => ({...p, y: p.y + 1}),
+  [KEY.SPACE]: p => ({...p, y: p.y + 1}),
 };
 
 // 키보드 입력 이벤트
 document.addEventListener('keydown', event => {
-  const {key} = event;
+  const {code} = event;
 
-  if (moves[key]) {
+  console.log(event);
+
+  if (moves[code]) {
     // 이벤트 버블링을 막는다.
     event.preventDefault();
 
     // NOTE ✨ 얕은 복사를 할 경우 p는 piece의 인스턴스가 아니라 일반 객체가 된다.
-    const p = moves[key](board.piece);
+    let p = moves[code](board.piece);
 
-    if (board.valid(p)) {
+    if (code === KEY.SPACE) {
+      while (board.valid(p)) {
+        board.piece.move(p);
+        p = moves[KEY.DOWN](board.piece);
+      }
+    } else if (board.valid(p)) {
       // 이동이 가능한 상태라면 조각을 이동한다.
       board.piece.move(p);
-
-      //   그리기 전에 이전 좌표를 지운다.
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-      board.piece.draw();
     }
+
+    //   그리기 전에 이전 좌표를 지운다.
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    board.piece.draw();
   }
 });
