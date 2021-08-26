@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', e => {
 				}
 				
 				const {strike, ball} = checkAnswer(answer);
-				$result.innerHTML += `<p>${strike} 스트라이크 ${ball} 볼</p>`;
+				$result.innerHTML += `<p>입력한 값: ${answer}, ${strike} 스트라이크 ${ball} 볼</p>`;
 				$input.value = '';
 				$input.focus();
 			}
