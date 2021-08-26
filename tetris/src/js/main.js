@@ -10,6 +10,7 @@ const time = {
 const accountValues = {
   score: 0,
   lines: 0,
+  level: 0,
 };
 
 // Account Proxy
@@ -17,6 +18,11 @@ const account = new Proxy(accountValues, {
   set: (target, key, value) => {
     target[key] = value;
     updateAccount(key, value);
+
+    if (key === 'level') {
+      time.level = LEVEL[value];
+    }
+
     return true;
   },
 });
@@ -53,6 +59,9 @@ document.addEventListener('keydown', event => {
       //   그리기 전에 이전 좌표를 지운다.
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       board.piece.draw();
+
+      // FIX: 하드 드롭 이후에 움직이는 이슈 수정
+      board.drop();
     } else if (board.valid(p)) {
       if (code === KEY.DOWN) {
         account.score += POINTS.SOFT_DROP;
@@ -72,11 +81,6 @@ document.addEventListener('keydown', event => {
 
 function play() {
   board.reset();
-  console.table(board.grid);
-
-  // const piece = new Piece(ctx);
-  // board.piece = piece;
-
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   animate();
 }

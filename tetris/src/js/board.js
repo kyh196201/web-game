@@ -46,6 +46,10 @@ class Board {
   }
 
   reset() {
+    this.account.score = 0;
+    this.account.lines = 0;
+    this.account.level = 0;
+
     this.grid = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
     this.getNextPiece();
@@ -145,6 +149,8 @@ class Board {
     if (lines > 0) {
       const score = this.getLineClearPoints(lines);
       this.account.score += score;
+      this.account.lines += lines;
+      this.account.level = parseInt(this.account.lines / 10);
     }
   }
 
@@ -163,6 +169,6 @@ class Board {
       point = 0;
     }
 
-    return point;
+    return point * (this.account.level + 1);
   }
 }
