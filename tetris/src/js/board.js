@@ -90,6 +90,8 @@ class Board {
       this.piece.move(p);
     } else {
       this.freeze();
+      // clear line
+      this.clearLines();
       this.piece = this.nextPiece;
       this.piece.ctx = this.ctx;
       this.getNextPiece();
@@ -124,6 +126,15 @@ class Board {
           this.grid[y][x] = value;
         }
       });
+    });
+  }
+
+  clearLines() {
+    this.grid.forEach((row, y) => {
+      if (row.every(value => value > 0)) {
+        this.grid.splice(y, 1);
+        this.grid.unshift(Array(COLS).fill(0));
+      }
     });
   }
 }
