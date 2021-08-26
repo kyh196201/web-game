@@ -1,7 +1,14 @@
 // 게임 초기화와 종료 코드
+const requestId = null;
+const time = {
+  start: 0,
+  elapsed: 0,
+  level: 1000,
+};
+
+// Canvas
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
-
 ctx.canvas.width = COLS * BLOCK_SIZE;
 ctx.canvas.height = ROWS * BLOCK_SIZE;
 
@@ -17,42 +24,31 @@ function play() {
 
   const piece = new Piece(ctx);
   board.piece = piece;
-  board.piece.draw();
+
+  animate();
 }
 
-// 조각 회전
-function rotate(p) {
-  // 얕은 복사
-  // NOTE: clone = {...p};로 했을 경우에는 shape가 변경됨
-  const clone = JSON.parse(JSON.stringify(p));
+function animate(now = 0) {
+  const elapsed = now - time.start;
 
-  // 행렬을 변환한다. p는 Piece의 인스턴스이다.
-  for (let y = 0; y < clone.shape.length; ++y) {
-    for (let x = 0; x < y; ++x) {
-      [clone.shape[x][y], clone.shape[y][x]] = [
-        clone.shape[y][x],
-        clone.shape[x][y],
-      ];
+  if (elapsed > time.level) {
+    // move
+    const dropped = board.drop();
+
+    if (!dropped) {
+      // freeze
     }
+    time.start = now;
   }
 
-  // 열 순서대로 뒤집는다.
-  clone.shape.forEach(row => row.reverse());
-
-  return clone;
+  clearCanvas(ctx);
+  board.draw();
+  window.requestAnimationFrame(animate);
 }
 
-/**
- * NOTE 얕은 복사
- * 원본 조각을 변화시키지 않고 새로운 조각을 얻을 수 있다.
- */
-const moves = {
-  [KEY.LEFT]: p => ({...p, x: p.x - 1}),
-  [KEY.RIGHT]: p => ({...p, x: p.x + 1}),
-  [KEY.DOWN]: p => ({...p, y: p.y + 1}),
-  [KEY.SPACE]: p => ({...p, y: p.y + 1}),
-  [KEY.UP]: p => rotate(p),
-};
+function clearCanvas(ctx) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
 
 // 키보드 입력 이벤트
 document.addEventListener('keydown', event => {
@@ -72,14 +68,14 @@ document.addEventListener('keydown', event => {
       }
 
       //   그리기 전에 이전 좌표를 지운다.
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      clearCanvas(ctx);
       board.piece.draw();
     } else if (board.valid(p)) {
       // 이동이 가능한 상태라면 조각을 이동한다.
       board.piece.move(p);
 
       //   그리기 전에 이전 좌표를 지운다.
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      clearCanvas(ctx);
       board.piece.draw();
     } else {
       return false;
