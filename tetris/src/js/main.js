@@ -12,6 +12,7 @@ const board = new Board(ROWS, COLS);
 
 function play() {
   board.reset();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   console.table(board.grid);
 
   const piece = new Piece(ctx);
@@ -19,6 +20,7 @@ function play() {
   board.piece.draw();
 }
 
+// 조각 회전
 function rotate(p) {
   // 얕은 복사
   // NOTE: clone = {...p};로 했을 경우에는 shape가 변경됨

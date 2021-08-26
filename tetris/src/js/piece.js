@@ -11,12 +11,9 @@ class Piece {
   }
 
   spawn() {
-    this.color = 'blue';
-    this.shape = [
-      [2, 0, 0],
-      [2, 2, 2],
-      [0, 0, 0],
-    ];
+    const typeId = this.randomizeTetrominoType(SHAPE.length);
+    this.shape = this.getRandomShape(typeId);
+    this.color = this.getRandomColor(typeId);
 
     // Starting position.
     this.x = 3;
@@ -39,5 +36,17 @@ class Piece {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;
+  }
+
+  getRandomShape(index) {
+    return SHAPE[index];
+  }
+
+  getRandomColor(index) {
+    return COLORS[index];
+  }
+
+  randomizeTetrominoType(length) {
+    return Math.floor(Math.random() * length);
   }
 }
