@@ -14,10 +14,6 @@ class Piece {
     const typeId = this.randomizeTetrominoType(SHAPE.length);
     this.shape = this.getRandomShape(typeId);
     this.color = this.getRandomColor(typeId);
-
-    // Starting position.
-    this.x = 3;
-    this.y = 0;
   }
 
   draw() {
@@ -48,5 +44,9 @@ class Piece {
 
   randomizeTetrominoType(length) {
     return Math.floor(Math.random() * length);
+  }
+
+  setStartingPosition() {
+    this.x = 3;
   }
 }

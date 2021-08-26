@@ -1,9 +1,9 @@
 // 게임 초기화와 종료 코드
-const requestId = null;
+let requestId = null;
 const time = {
   start: 0,
   elapsed: 0,
-  level: 1000,
+  level: 800,
 };
 
 // Account
@@ -20,7 +20,9 @@ const account = new Proxy(accountValues, {
     updateAccount(key, value);
 
     if (key === 'level') {
-      time.level = LEVEL[value];
+      const newLevel = Math.max(40, time.level - MINUS_PER_LEVEL * value);
+
+      time.level = newLevel;
     }
 
     return true;
@@ -36,7 +38,15 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 // scale을 사용해서 블록의 크기를 1로 취급하도록 설정
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
-const board = new Board({rows: ROWS, cols: COLS}, ctx, account);
+const next = document.getElementById('next');
+const ctxNext = next.getContext('2d');
+ctxNext.canvas.width = 4 * BLOCK_SIZE;
+ctxNext.canvas.height = 4 * BLOCK_SIZE;
+
+// scale을 사용해서 블록의 크기를 1로 취급하도록 설정
+ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+
+const board = new Board({rows: ROWS, cols: COLS}, ctx, ctxNext, account);
 
 // 키보드 입력 이벤트
 document.addEventListener('keydown', event => {
@@ -58,9 +68,9 @@ document.addEventListener('keydown', event => {
 
       //   그리기 전에 이전 좌표를 지운다.
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      board.piece.draw();
+      ctxNext.clearRect(0, 0, ctxNext.canvas.width, ctxNext.canvas.height);
+      board.draw();
 
-      // FIX: 하드 드롭 이후에 움직이는 이슈 수정
       board.drop();
     } else if (board.valid(p)) {
       if (code === KEY.DOWN) {
@@ -72,7 +82,8 @@ document.addEventListener('keydown', event => {
 
       //   그리기 전에 이전 좌표를 지운다.
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      board.piece.draw();
+      ctxNext.clearRect(0, 0, ctxNext.canvas.width, ctxNext.canvas.height);
+      board.draw();
     } else {
       return false;
     }
@@ -82,6 +93,7 @@ document.addEventListener('keydown', event => {
 function play() {
   board.reset();
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctxNext.clearRect(0, 0, ctxNext.canvas.width, ctxNext.canvas.height);
   animate();
 }
 
@@ -94,14 +106,22 @@ function animate(now = 0) {
 
     if (!dropped) {
       // Game Over
+      gameOver();
+      return;
     }
     time.start = now;
   }
   // Clear board before drawing new state.
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctxNext.clearRect(0, 0, ctxNext.canvas.width, ctxNext.canvas.height);
 
   board.draw();
-  window.requestAnimationFrame(animate);
+  requestId = window.requestAnimationFrame(animate);
+}
+
+function gameOver() {
+  window.cancelAnimationFrame(requestId);
+  alert('game over!');
 }
 
 function updateAccount(key, value) {

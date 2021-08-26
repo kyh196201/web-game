@@ -33,8 +33,9 @@ const moves = {
   [KEY.UP]: p => rotate(p),
 };
 class Board {
-  constructor(scale, ctx, account) {
+  constructor(scale, ctx, ctxNext, account) {
     this.ctx = ctx;
+    this.ctxNext = ctxNext;
     this.account = account;
 
     this.rows = scale.rows;
@@ -48,10 +49,11 @@ class Board {
   reset() {
     this.account.score = 0;
     this.account.lines = 0;
-    this.account.level = 0;
+    this.account.level = 5;
 
     this.grid = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
+    this.piece.setStartingPosition();
     this.getNextPiece();
   }
 
@@ -60,7 +62,7 @@ class Board {
   }
 
   getNextPiece() {
-    this.nextPiece = new Piece();
+    this.nextPiece = new Piece(this.ctxNext);
   }
 
   valid(p) {
@@ -96,10 +98,16 @@ class Board {
       this.piece.move(p);
     } else {
       this.freeze();
-      // clear line
       this.clearLines();
+
+      if (this.piece.y <= 0) {
+        // Game Over
+        return false;
+      }
+
       this.piece = this.nextPiece;
       this.piece.ctx = this.ctx;
+      this.piece.setStartingPosition();
       this.getNextPiece();
     }
 
@@ -108,6 +116,7 @@ class Board {
 
   draw() {
     this.piece.draw();
+    this.nextPiece.draw();
     this.drawBoard();
   }
 

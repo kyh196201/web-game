@@ -5,18 +5,7 @@ const BLOCK_SIZE = 30;
 
 const LINES_PER_LEVEL = 10;
 
-const LEVEL = {
-  0: 800,
-  1: 720,
-  2: 630,
-  3: 550,
-  4: 520,
-  5: 470,
-  6: 400,
-  7: 330,
-  8: 300,
-  9: 250,
-};
+const MINUS_PER_LEVEL = 80;
 
 // enumeration
 const KEY = {
@@ -94,4 +83,3 @@ Object.freeze(KEY);
 Object.freeze(COLORS);
 Object.freeze(SHAPE);
 Object.freeze(POINTS);
-Object.freeze(LEVEL);
