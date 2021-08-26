@@ -12,6 +12,15 @@ const KEY = {
   SPACE: 'Space',
 };
 
+const POINTS = {
+  SINGLE: 100,
+  DOUBLE: 300,
+  TRIPLE: 500,
+  TETRIS: 800,
+  SOFT_DROP: 1,
+  HARD_DROP: 2,
+};
+
 const COLORS = ['cyan', 'blue', 'orange', 'yellow', 'green', 'purple', 'red'];
 
 const SHAPE = [
@@ -69,3 +78,4 @@ const SHAPE = [
 Object.freeze(KEY);
 Object.freeze(COLORS);
 Object.freeze(SHAPE);
+Object.freeze(POINTS);

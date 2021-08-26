@@ -33,8 +33,10 @@ const moves = {
   [KEY.UP]: p => rotate(p),
 };
 class Board {
-  constructor(scale, ctx) {
+  constructor(scale, ctx, account) {
     this.ctx = ctx;
+    this.account = account;
+
     this.rows = scale.rows;
     this.cols = scale.cols;
     this.grid = [];
@@ -130,11 +132,37 @@ class Board {
   }
 
   clearLines() {
+    let lines = 0;
+
     this.grid.forEach((row, y) => {
       if (row.every(value => value > 0)) {
         this.grid.splice(y, 1);
         this.grid.unshift(Array(COLS).fill(0));
+        lines++;
       }
     });
+
+    if (lines > 0) {
+      const score = this.getLineClearPoints(lines);
+      this.account.score += score;
+    }
+  }
+
+  getLineClearPoints(lines) {
+    let point = 0;
+
+    if (lines === 1) {
+      point = POINTS.SINGLE;
+    } else if (lines === 2) {
+      point = POINTS.DOUBLE;
+    } else if (lines === 3) {
+      point = POINTS.TRIPLE;
+    } else if (lines === 42) {
+      point = POINTS.TETRIS;
+    } else {
+      point = 0;
+    }
+
+    return point;
   }
 }
