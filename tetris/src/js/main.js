@@ -3,7 +3,7 @@ const requestId = null;
 const time = {
   start: 0,
   elapsed: 0,
-  level: 1000,
+  level: 250,
 };
 
 // Canvas
@@ -15,16 +15,16 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 // scale을 사용해서 블록의 크기를 1로 취급하도록 설정
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
-const board = new Board(ROWS, COLS);
+const board = new Board({rows: ROWS, cols: COLS}, ctx);
 
 function play() {
   board.reset();
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   console.table(board.grid);
 
-  const piece = new Piece(ctx);
-  board.piece = piece;
+  // const piece = new Piece(ctx);
+  // board.piece = piece;
 
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   animate();
 }
 
@@ -36,18 +36,15 @@ function animate(now = 0) {
     const dropped = board.drop();
 
     if (!dropped) {
-      // freeze
+      // Game Over
     }
     time.start = now;
   }
+  // Clear board before drawing new state.
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  clearCanvas(ctx);
   board.draw();
   window.requestAnimationFrame(animate);
-}
-
-function clearCanvas(ctx) {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 // 키보드 입력 이벤트
@@ -68,14 +65,14 @@ document.addEventListener('keydown', event => {
       }
 
       //   그리기 전에 이전 좌표를 지운다.
-      clearCanvas(ctx);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       board.piece.draw();
     } else if (board.valid(p)) {
       // 이동이 가능한 상태라면 조각을 이동한다.
       board.piece.move(p);
 
       //   그리기 전에 이전 좌표를 지운다.
-      clearCanvas(ctx);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       board.piece.draw();
     } else {
       return false;

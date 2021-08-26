@@ -33,18 +33,28 @@ const moves = {
   [KEY.UP]: p => rotate(p),
 };
 class Board {
-  constructor(rows, cols) {
-    this.rows = rows;
-    this.cols = cols;
+  constructor(scale, ctx) {
+    this.ctx = ctx;
+    this.rows = scale.rows;
+    this.cols = scale.cols;
     this.grid = [];
+
+    this.piece = null;
+    this.nextPiece = null;
   }
 
   reset() {
     this.grid = this.getEmptyBoard();
+    this.piece = new Piece(this.ctx);
+    this.getNextPiece();
   }
 
   getEmptyBoard() {
     return Array.from({length: this.rows}, () => Array(this.cols).fill(0));
+  }
+
+  getNextPiece() {
+    this.nextPiece = new Piece();
   }
 
   valid(p) {
@@ -76,15 +86,44 @@ class Board {
   drop() {
     const p = moves[KEY.DOWN](this.piece);
 
-    if (!this.valid(p)) {
-      return false;
+    if (this.valid(p)) {
+      this.piece.move(p);
+    } else {
+      this.freeze();
+      this.piece = this.nextPiece;
+      this.piece.ctx = this.ctx;
+      this.getNextPiece();
     }
 
-    this.piece.move(p);
     return true;
   }
 
   draw() {
     this.piece.draw();
+    this.drawBoard();
+  }
+
+  drawBoard() {
+    this.grid.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = COLORS[value - 1];
+          this.ctx.fillRect(x, y, 1, 1);
+        }
+      });
+    });
+  }
+
+  freeze() {
+    this.piece.shape.forEach((row, dy) => {
+      row.forEach((value, dx) => {
+        if (value > 0) {
+          const x = this.piece.x + dx;
+          const y = this.piece.y + dy;
+
+          this.grid[y][x] = value;
+        }
+      });
+    });
   }
 }

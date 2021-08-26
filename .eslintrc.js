@@ -34,6 +34,7 @@ module.exports = {
     'no-bitwise': 'off',
     'no-param-reassign': 'off',
     'no-undef': 'off',
+    'no-use-before-define': 'off',
     radix: 'off',
   },
   settings: {
