@@ -49,7 +49,7 @@ class Board {
   reset() {
     this.account.score = 0;
     this.account.lines = 0;
-    this.account.level = 5;
+    this.account.level = 0;
 
     this.grid = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
